@@ -9,9 +9,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData.from(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 46, 97, 110),
+        ),
+      ),
       debugShowCheckedModeBanner: false,
       title: 'Chat App',
-      initialRoute: 'users',
+      initialRoute: 'login',
       routes: appRoutes,
     );
   }
