@@ -1,4 +1,5 @@
 import 'package:chat_app_2/models/user.dart';
+import 'package:chat_app_2/views/chat_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -83,6 +84,14 @@ class _UserListTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(100),
         ),
       ),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatView(userName: user.name),
+          ),
+        );
+      },
     );
   }
 }

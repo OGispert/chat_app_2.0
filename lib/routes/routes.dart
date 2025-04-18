@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 final Map<String, Widget Function(BuildContext)> appRoutes = {
   'users': (_) => UsersView(),
-  'chat': (_) => ChatView(),
+  'chat': (_) => ChatView(userName: ''),
   'register': (_) => RegisterView(),
   'login': (_) => LoginView(),
   'loading': (_) => LoadingView(),
