@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chat_app_2/widgets/message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,17 +13,38 @@ class ChatView extends StatefulWidget {
   State<ChatView> createState() => _ChatViewState();
 }
 
-class _ChatViewState extends State<ChatView> {
+class _ChatViewState extends State<ChatView> with TickerProviderStateMixin {
   final messageController = TextEditingController();
   final focusNode = FocusNode();
   bool isWriting = false;
 
+  List<Message> messages = [];
+
   void _sendMessage() {
+    final newMessage = Message(
+      message: messageController.text,
+      uuid: 'own',
+      animationController: AnimationController(
+        vsync: this,
+        duration: Duration(milliseconds: 400),
+      ),
+    );
     messageController.clear();
     focusNode.requestFocus();
+    newMessage.animationController.forward();
     setState(() {
+      messages.insert(0, newMessage);
       isWriting = false;
     });
+  }
+
+  @override
+  void dispose() {
+    for (Message message in messages) {
+      message.animationController.dispose();
+    }
+
+    super.dispose();
   }
 
   @override
@@ -45,7 +67,8 @@ class _ChatViewState extends State<ChatView> {
         children: [
           Expanded(
             child: ListView.builder(
-              itemBuilder: (context, index) => Text('message'),
+              itemCount: messages.length,
+              itemBuilder: (context, index) => messages[index],
               reverse: true,
             ),
           ),
@@ -58,11 +81,13 @@ class _ChatViewState extends State<ChatView> {
 
   Widget _inputTextBox() {
     return Padding(
-      padding: EdgeInsets.only(left: 16, right: 4, bottom: 32),
+      padding: EdgeInsets.only(left: 16, right: 4, bottom: 16),
       child: Row(
         children: [
           Expanded(
             child: TextField(
+              minLines: 1,
+              maxLines: 4,
               controller: messageController,
               textCapitalization: TextCapitalization.sentences,
               autocorrect: true,
