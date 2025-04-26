@@ -1,5 +1,7 @@
 import 'package:chat_app_2/models/user.dart';
+import 'package:chat_app_2/services/auth_service.dart';
 import 'package:chat_app_2/views/chat_view.dart';
+import 'package:chat_app_2/views/login_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -19,9 +21,24 @@ class _UsersViewState extends State<UsersView> {
   );
 
   final List<User> users = [
-    User(isOnline: true, email: 'email@email.com', name: 'name 1'),
-    User(isOnline: false, email: 'email2@email.com', name: 'name 2'),
-    User(isOnline: true, email: 'email3@email.com', name: 'name 3'),
+    User(
+      isOnline: true,
+      username: 'email@email.com',
+      name: 'name 1',
+      uid: '123',
+    ),
+    User(
+      isOnline: false,
+      username: 'email2@email.com',
+      name: 'name 2',
+      uid: '456',
+    ),
+    User(
+      isOnline: true,
+      username: 'email3@email.com',
+      name: 'name 3',
+      uid: '789',
+    ),
   ];
 
   void _loadUsers() async {
@@ -36,7 +53,16 @@ class _UsersViewState extends State<UsersView> {
       appBar: AppBar(
         title: Text('My Message App'),
         elevation: 1,
-        leading: IconButton(onPressed: () {}, icon: Icon(Icons.logout)),
+        leading: IconButton(
+          onPressed: () {
+            AuthService().logout();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => LoginView()),
+            );
+          },
+          icon: Icon(Icons.logout),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
@@ -75,7 +101,7 @@ class _UserListTile extends StatelessWidget {
     return ListTile(
       leading: CircleAvatar(child: Text(user.name.substring(0, 2))),
       title: Text(user.name),
-      subtitle: Text(user.email),
+      subtitle: Text(user.username),
       trailing: Container(
         width: 10,
         height: 10,

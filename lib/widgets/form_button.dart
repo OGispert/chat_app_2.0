@@ -8,7 +8,7 @@ class CustomFormButton extends StatelessWidget {
   });
 
   final String buttonLabel;
-  final void Function() onPress;
+  final void Function()? onPress;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,9 @@ class CustomFormButton extends StatelessWidget {
       child: ElevatedButton(
         style: ButtonStyle(
           elevation: WidgetStatePropertyAll(5),
-          backgroundColor: WidgetStatePropertyAll(Colors.blue),
+          backgroundColor: WidgetStatePropertyAll(
+            onPress == null ? Colors.black26 : Colors.blue,
+          ),
           foregroundColor: WidgetStatePropertyAll(Colors.white),
         ),
         onPressed: onPress,

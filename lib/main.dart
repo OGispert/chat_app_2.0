@@ -1,5 +1,7 @@
-import 'package:chat_app_2/routes/routes.dart';
+import 'package:chat_app_2/services/auth_service.dart';
+import 'package:chat_app_2/views/login_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() => runApp(const MyApp());
 
@@ -8,16 +10,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData.from(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 46, 97, 110),
+    return MultiProvider(
+      providers: [ChangeNotifierProvider(create: (context) => AuthService())],
+      child: MaterialApp(
+        theme: ThemeData.from(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 46, 97, 110),
+          ),
         ),
+        debugShowCheckedModeBanner: false,
+        home: LoginView(),
       ),
-      debugShowCheckedModeBanner: false,
-      title: 'Chat App',
-      initialRoute: 'users',
-      routes: appRoutes,
     );
   }
 }

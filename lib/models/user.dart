@@ -1,12 +1,33 @@
-import 'package:uuid/uuid.dart';
+import 'dart:convert';
 
-final uuid = Uuid().v4();
+User userFromJson(String str) => User.fromJson(json.decode(str));
+
+String userToJson(User data) => json.encode(data.toJson());
 
 class User {
-  User({required this.isOnline, required this.email, required this.name});
+  String name;
+  String username;
+  bool isOnline;
+  String uid;
 
-  final bool isOnline;
-  final String email;
-  final String name;
-  final String uid = uuid;
+  User({
+    required this.name,
+    required this.username,
+    required this.isOnline,
+    required this.uid,
+  });
+
+  factory User.fromJson(Map<String, dynamic> json) => User(
+    name: json["name"],
+    username: json["username"],
+    isOnline: json["isOnline"],
+    uid: json["uid"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "name": name,
+    "username": username,
+    "isOnline": isOnline,
+    "uid": uid,
+  };
 }

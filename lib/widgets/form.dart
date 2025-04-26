@@ -1,6 +1,10 @@
+import 'package:chat_app_2/services/auth_service.dart';
+import 'package:chat_app_2/views/users_view.dart';
+import 'package:chat_app_2/widgets/alerts.dart';
 import 'package:chat_app_2/widgets/form_button.dart';
 import 'package:chat_app_2/widgets/form_field.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CustomForm extends StatefulWidget {
   const CustomForm({super.key, this.isRegistering = false});
@@ -18,6 +22,8 @@ class _CustomFormState extends State<CustomForm> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+
     return Column(
       children: [
         if (widget.isRegistering)
@@ -29,7 +35,7 @@ class _CustomFormState extends State<CustomForm> {
         SizedBox(height: 16),
 
         CustomFormField(
-          fieldLabel: 'Username',
+          fieldLabel: 'Username (email)',
           fieldIcon: Icon(Icons.mail_outline),
           keyboardType: TextInputType.emailAddress,
           textController: usernameController,
@@ -43,7 +49,33 @@ class _CustomFormState extends State<CustomForm> {
         ),
         CustomFormButton(
           buttonLabel: widget.isRegistering ? 'Register' : 'Sign In',
-          onPress: () {},
+          onPress:
+              authService.authenticating
+                  ? null
+                  : () async {
+                    if (widget.isRegistering) {
+                    } else {
+                      FocusScope.of(context).unfocus();
+                      final loggedIn = await authService.login(
+                        usernameController.text.trim(),
+                        passwordController.text.trim(),
+                      );
+
+                      if (loggedIn && context.mounted) {
+                        // ToDo - Connect socket server
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => UsersView()),
+                        );
+                      } else if (context.mounted) {
+                        showCustomAlert(
+                          context,
+                          'Login error!',
+                          'Please check your credentials and try again.',
+                        );
+                      }
+                    }
+                  },
         ),
       ],
     );

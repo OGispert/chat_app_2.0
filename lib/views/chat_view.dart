@@ -43,7 +43,6 @@ class _ChatViewState extends State<ChatView> with TickerProviderStateMixin {
     for (Message message in messages) {
       message.animationController.dispose();
     }
-
     super.dispose();
   }
 
