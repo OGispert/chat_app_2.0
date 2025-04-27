@@ -1,6 +1,7 @@
 import 'package:chat_app_2/models/user.dart';
 import 'package:chat_app_2/services/auth_service.dart';
 import 'package:chat_app_2/services/socket_service.dart';
+import 'package:chat_app_2/services/users_service.dart';
 import 'package:chat_app_2/views/chat_view.dart';
 import 'package:chat_app_2/views/login_view.dart';
 import 'package:flutter/material.dart';
@@ -19,31 +20,19 @@ class _UsersViewState extends State<UsersView> {
     initialRefresh: false,
   );
 
-  final List<User> users = [
-    User(
-      isOnline: true,
-      username: 'email@email.com',
-      name: 'name 1',
-      uid: '123',
-    ),
-    User(
-      isOnline: false,
-      username: 'email2@email.com',
-      name: 'name 2',
-      uid: '456',
-    ),
-    User(
-      isOnline: true,
-      username: 'email3@email.com',
-      name: 'name 3',
-      uid: '789',
-    ),
-  ];
+  final usersService = UsersService();
+  List<User> users = [];
 
   void _loadUsers() async {
-    await Future.delayed(Duration(milliseconds: 1000));
-    // if failed,use refreshFailed()
+    users = await usersService.getUsers();
+    setState(() {});
     _refreshController.refreshCompleted();
+  }
+
+  @override
+  void initState() {
+    _loadUsers();
+    super.initState();
   }
 
   @override
