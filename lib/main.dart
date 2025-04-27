@@ -1,5 +1,5 @@
 import 'package:chat_app_2/services/auth_service.dart';
-import 'package:chat_app_2/views/login_view.dart';
+import 'package:chat_app_2/views/loading_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         debugShowCheckedModeBanner: false,
-        home: LoginView(),
+        home: LoadingView(),
       ),
     );
   }

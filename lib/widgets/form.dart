@@ -53,9 +53,31 @@ class _CustomFormState extends State<CustomForm> {
               authService.authenticating
                   ? null
                   : () async {
+                    FocusScope.of(context).unfocus();
                     if (widget.isRegistering) {
+                      final registered = await authService.register(
+                        nameController.text.trim(),
+                        usernameController.text.trim(),
+                        passwordController.text.trim(),
+                      );
+
+                      if (registered && context.mounted) {
+                        nameController.clear();
+                        usernameController.clear();
+                        passwordController.clear();
+                        showCustomAlert(
+                          context,
+                          'Register success!',
+                          'Please login with your new credentials.',
+                        );
+                      } else if (context.mounted) {
+                        showCustomAlert(
+                          context,
+                          'Register error!',
+                          'Please try again.',
+                        );
+                      }
                     } else {
-                      FocusScope.of(context).unfocus();
                       final loggedIn = await authService.login(
                         usernameController.text.trim(),
                         passwordController.text.trim(),
@@ -65,7 +87,9 @@ class _CustomFormState extends State<CustomForm> {
                         // ToDo - Connect socket server
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => UsersView()),
+                          PageRouteBuilder(
+                            pageBuilder: (_, __, ___) => UsersView(),
+                          ),
                         );
                       } else if (context.mounted) {
                         showCustomAlert(

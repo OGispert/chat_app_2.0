@@ -43,6 +43,25 @@ class AuthService with ChangeNotifier {
     return false;
   }
 
+  Future<bool> register(String name, String username, String password) async {
+    authenticating = true;
+
+    final data = {'name': name, 'username': username, 'password': password};
+
+    final response = await http.post(
+      Uri.parse('${Environments.apiURL}/login/new'),
+      body: jsonEncode(data),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    authenticating = false;
+
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
+
   Future _saveToken(String token) async {
     return await _storage.write(key: 'token', value: token);
   }
@@ -60,5 +79,23 @@ class AuthService with ChangeNotifier {
   static Future deleteToken() async {
     final storage = FlutterSecureStorage();
     await storage.delete(key: 'token');
+  }
+
+  Future<bool> isLoggedId() async {
+    final token = await _storage.read(key: 'token');
+
+    final response = await http.get(
+      Uri.parse('${Environments.apiURL}/login/renew'),
+      headers: {'Content-Type': 'application/json', 'x-token': token ?? ''},
+    );
+
+    if (response.statusCode == 200) {
+      final loginResponse = loginResponseFromJson(response.body);
+      user = loginResponse.user;
+      await _saveToken(loginResponse.token);
+      return true;
+    }
+    logout();
+    return false;
   }
 }

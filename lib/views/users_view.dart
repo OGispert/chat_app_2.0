@@ -58,7 +58,7 @@ class _UsersViewState extends State<UsersView> {
             AuthService().logout();
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => LoginView()),
+              PageRouteBuilder(pageBuilder: (_, __, ___) => LoginView()),
             );
           },
           icon: Icon(Icons.logout),
