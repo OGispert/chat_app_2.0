@@ -1,9 +1,10 @@
 import 'package:chat_app_2/models/user.dart';
 import 'package:chat_app_2/services/auth_service.dart';
+import 'package:chat_app_2/services/socket_service.dart';
 import 'package:chat_app_2/views/chat_view.dart';
 import 'package:chat_app_2/views/login_view.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UsersView extends StatefulWidget {
@@ -14,8 +15,6 @@ class UsersView extends StatefulWidget {
 }
 
 class _UsersViewState extends State<UsersView> {
-  final bool isConnected = false;
-
   final RefreshController _refreshController = RefreshController(
     initialRefresh: false,
   );
@@ -49,13 +48,17 @@ class _UsersViewState extends State<UsersView> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('My Message App'),
         elevation: 1,
         leading: IconButton(
           onPressed: () {
-            AuthService().logout();
+            authService.logout();
+            socketService.disconnect();
             Navigator.pushReplacement(
               context,
               PageRouteBuilder(pageBuilder: (_, __, ___) => LoginView()),
@@ -67,7 +70,7 @@ class _UsersViewState extends State<UsersView> {
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child:
-                isConnected
+                socketService.serverState == ServerState.online
                     ? Icon(Icons.cloud_done_outlined, color: Colors.blue)
                     : Icon(Icons.cloud_off, color: Colors.red),
           ),

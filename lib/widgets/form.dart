@@ -1,4 +1,5 @@
 import 'package:chat_app_2/services/auth_service.dart';
+import 'package:chat_app_2/services/socket_service.dart';
 import 'package:chat_app_2/views/users_view.dart';
 import 'package:chat_app_2/widgets/alerts.dart';
 import 'package:chat_app_2/widgets/form_button.dart';
@@ -23,6 +24,7 @@ class _CustomFormState extends State<CustomForm> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
 
     return Column(
       children: [
@@ -84,7 +86,7 @@ class _CustomFormState extends State<CustomForm> {
                       );
 
                       if (loggedIn && context.mounted) {
-                        // ToDo - Connect socket server
+                        socketService.connect();
                         Navigator.pushReplacement(
                           context,
                           PageRouteBuilder(
