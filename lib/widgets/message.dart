@@ -1,4 +1,6 @@
+import 'package:chat_app_2/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Message extends StatelessWidget {
   const Message({
@@ -14,6 +16,9 @@ class Message extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final ownUID = authService.user.uid;
+
     return FadeTransition(
       opacity: animationController,
       child: SizeTransition(
@@ -21,12 +26,12 @@ class Message extends StatelessWidget {
           parent: animationController,
           curve: Curves.easeOut,
         ),
-        child: uuid == 'own' ? sent() : received(),
+        child: uuid == ownUID ? sent(uuid == ownUID) : received(uuid == ownUID),
       ),
     );
   }
 
-  Widget sent() {
+  Widget sent(bool ownUID) {
     return Align(
       alignment: Alignment.centerRight,
       child: Container(
@@ -35,10 +40,8 @@ class Message extends StatelessWidget {
         decoration: BoxDecoration(
           color: Color(0xff4D9EF6),
           borderRadius: BorderRadius.only(
-            bottomLeft:
-                !(uuid == 'own') ? Radius.zero : const Radius.circular(12),
-            bottomRight:
-                (uuid == 'own') ? Radius.zero : const Radius.circular(12),
+            bottomLeft: !(ownUID) ? Radius.zero : const Radius.circular(12),
+            bottomRight: (ownUID) ? Radius.zero : const Radius.circular(12),
             topLeft: const Radius.circular(12),
             topRight: const Radius.circular(12),
           ),
@@ -48,7 +51,7 @@ class Message extends StatelessWidget {
     );
   }
 
-  Widget received() {
+  Widget received(bool ownUID) {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
@@ -57,10 +60,8 @@ class Message extends StatelessWidget {
         decoration: BoxDecoration(
           color: Color.fromARGB(255, 38, 188, 68),
           borderRadius: BorderRadius.only(
-            bottomLeft:
-                !(uuid == 'own') ? Radius.zero : const Radius.circular(12),
-            bottomRight:
-                (uuid == 'own') ? Radius.zero : const Radius.circular(12),
+            bottomLeft: !(ownUID) ? Radius.zero : const Radius.circular(12),
+            bottomRight: (ownUID) ? Radius.zero : const Radius.circular(12),
             topLeft: const Radius.circular(12),
             topRight: const Radius.circular(12),
           ),

@@ -1,5 +1,6 @@
 import 'package:chat_app_2/models/user.dart';
 import 'package:chat_app_2/services/auth_service.dart';
+import 'package:chat_app_2/services/chat_service.dart';
 import 'package:chat_app_2/services/socket_service.dart';
 import 'package:chat_app_2/services/users_service.dart';
 import 'package:chat_app_2/views/chat_view.dart';
@@ -103,11 +104,11 @@ class _UserListTile extends StatelessWidget {
         ),
       ),
       onTap: () {
+        final chatService = Provider.of<ChatService>(context, listen: false);
+        chatService.receipient = user;
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => ChatView(userName: user.name),
-          ),
+          MaterialPageRoute(builder: (context) => ChatView()),
         );
       },
     );

@@ -1,13 +1,15 @@
 import 'dart:io';
 
+import 'package:chat_app_2/services/auth_service.dart';
+import 'package:chat_app_2/services/chat_service.dart';
+import 'package:chat_app_2/services/socket_service.dart';
 import 'package:chat_app_2/widgets/message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ChatView extends StatefulWidget {
-  const ChatView({super.key, required this.userName});
-
-  final String userName;
+  const ChatView({super.key});
 
   @override
   State<ChatView> createState() => _ChatViewState();
@@ -18,12 +20,17 @@ class _ChatViewState extends State<ChatView> with TickerProviderStateMixin {
   final focusNode = FocusNode();
   bool isWriting = false;
 
+  late ChatService chatService;
+  late SocketService socketService;
+  late AuthService authService;
+
   List<Message> messages = [];
 
   void _sendMessage() {
+    final message = messageController.text;
     final newMessage = Message(
-      message: messageController.text,
-      uuid: 'own',
+      message: message,
+      uuid: authService.user.uid,
       animationController: AnimationController(
         vsync: this,
         duration: Duration(milliseconds: 400),
@@ -36,10 +43,43 @@ class _ChatViewState extends State<ChatView> with TickerProviderStateMixin {
       messages.insert(0, newMessage);
       isWriting = false;
     });
+
+    socketService.socket.emit('private-message', {
+      'from': authService.user.uid,
+      'to': chatService.receipient.uid,
+      'message': message,
+    });
+  }
+
+  void _receiveMessage(dynamic payload) {
+    final receivedMessage = Message(
+      message: payload['message'],
+      uuid: payload['from'],
+      animationController: AnimationController(
+        vsync: this,
+        duration: Duration(milliseconds: 400),
+      ),
+    );
+    setState(() {
+      messages.insert(0, receivedMessage);
+    });
+    receivedMessage.animationController.forward();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    chatService = Provider.of<ChatService>(context, listen: false);
+    socketService = Provider.of<SocketService>(context, listen: false);
+    authService = Provider.of<AuthService>(context, listen: false);
+
+    socketService.socket.on('private-message', _receiveMessage);
   }
 
   @override
   void dispose() {
+    socketService.socket.off('private-message');
+    messageController.dispose();
     for (Message message in messages) {
       message.animationController.dispose();
     }
@@ -52,10 +92,12 @@ class _ChatViewState extends State<ChatView> with TickerProviderStateMixin {
       appBar: AppBar(
         title: Row(
           children: [
-            CircleAvatar(child: Text(widget.userName.substring(0, 2))),
+            CircleAvatar(
+              child: Text(chatService.receipient.name.substring(0, 2)),
+            ),
             SizedBox(width: 8),
             Text(
-              widget.userName,
+              chatService.receipient.name,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ],
