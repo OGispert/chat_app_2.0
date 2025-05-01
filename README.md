@@ -1,16 +1,13 @@
 # chat_app_2
 
-A new Flutter project.
+A Flutter project.
 
-## Getting Started
+## Description
 
-This project is a starting point for a Flutter application.
+A chat app that allows the logged in user to see the list of friends, and see which friends are online, send and receive messages live and retreive a list of historic messages.
 
-A few resources to get you started if this is your first Flutter project:
+This app uses a backend service created with JS and a Mongo DB
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+See the ([chat_app_2.0-backend](https://github.com/OGispert/chat_app_2.0-backend)) to use along this app to connect to the backend service.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+It also uses sockets for the live conversation.
