@@ -24,11 +24,11 @@ class _ChatViewState extends State<ChatView> with TickerProviderStateMixin {
   late SocketService socketService;
   late AuthService authService;
 
-  List<Message> messages = [];
+  List<MessageWidget> messagesToDisplay = [];
 
   void _sendMessage() {
     final message = messageController.text;
-    final newMessage = Message(
+    final newMessage = MessageWidget(
       message: message,
       uuid: authService.user.uid,
       animationController: AnimationController(
@@ -40,7 +40,7 @@ class _ChatViewState extends State<ChatView> with TickerProviderStateMixin {
     focusNode.requestFocus();
     newMessage.animationController.forward();
     setState(() {
-      messages.insert(0, newMessage);
+      messagesToDisplay.insert(0, newMessage);
       isWriting = false;
     });
 
@@ -52,7 +52,7 @@ class _ChatViewState extends State<ChatView> with TickerProviderStateMixin {
   }
 
   void _receiveMessage(dynamic payload) {
-    final receivedMessage = Message(
+    final receivedMessage = MessageWidget(
       message: payload['message'],
       uuid: payload['from'],
       animationController: AnimationController(
@@ -61,9 +61,28 @@ class _ChatViewState extends State<ChatView> with TickerProviderStateMixin {
       ),
     );
     setState(() {
-      messages.insert(0, receivedMessage);
+      messagesToDisplay.insert(0, receivedMessage);
     });
     receivedMessage.animationController.forward();
+  }
+
+  void _loadMessages(String userId) async {
+    final messages = await chatService.getChat(userId);
+
+    final chatMessages = messages.map(
+      (m) => MessageWidget(
+        message: m.message,
+        uuid: m.from,
+        animationController: AnimationController(
+          vsync: this,
+          duration: Duration(milliseconds: 0),
+        )..forward(),
+      ),
+    );
+
+    setState(() {
+      messagesToDisplay.insertAll(0, chatMessages);
+    });
   }
 
   @override
@@ -74,13 +93,15 @@ class _ChatViewState extends State<ChatView> with TickerProviderStateMixin {
     authService = Provider.of<AuthService>(context, listen: false);
 
     socketService.socket.on('private-message', _receiveMessage);
+
+    _loadMessages(chatService.receipient.uid);
   }
 
   @override
   void dispose() {
     socketService.socket.off('private-message');
     messageController.dispose();
-    for (Message message in messages) {
+    for (MessageWidget message in messagesToDisplay) {
       message.animationController.dispose();
     }
     super.dispose();
@@ -108,8 +129,8 @@ class _ChatViewState extends State<ChatView> with TickerProviderStateMixin {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: messages.length,
-              itemBuilder: (context, index) => messages[index],
+              itemCount: messagesToDisplay.length,
+              itemBuilder: (context, index) => messagesToDisplay[index],
               reverse: true,
             ),
           ),

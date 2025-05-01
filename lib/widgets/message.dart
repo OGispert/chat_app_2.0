@@ -2,8 +2,8 @@ import 'package:chat_app_2/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Message extends StatelessWidget {
-  const Message({
+class MessageWidget extends StatelessWidget {
+  const MessageWidget({
     super.key,
     required this.message,
     required this.uuid,
